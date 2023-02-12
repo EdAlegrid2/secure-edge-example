@@ -37,7 +37,7 @@ m2m.connect('https://dev.node-m2m.com', () => {
     let encrypted = ''
     try{
         const cipher = createCipheriv(algorithm, key, iv)
-        encrypted = cipher.update('bading ka Rv, super', 'utf8', 'hex')
+        encrypted = cipher.update('node-m2m is awesome', 'utf8', 'hex')
         encrypted += cipher.final('hex')
         //console.log(encrypted) 
     }
@@ -51,7 +51,7 @@ m2m.connect('https://dev.node-m2m.com', () => {
     // wait for the key distribution to server 
     setTimeout(() => {    
         ec1.sendData('dec-data', ecs , (data) => {
-            console.log('ec1 dec-data', data)
+            console.log('ec1 dec-data:', data)
         })
 
         ec1.sub('enc-data', (data) => {
@@ -69,7 +69,7 @@ m2m.connect('https://dev.node-m2m.com', () => {
                     const decipher = createDecipheriv(algorithm, key, iv)
                     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
                     decrypted += decipher.final('utf8');
-                    console.log('ec1 decrypted dec-data', decrypted);
+                    console.log('ec1 decrypted dec-data:', decrypted);
                 }
                 catch(e){
                     console.log('enc-data decrypt error:', e.message);
@@ -77,5 +77,4 @@ m2m.connect('https://dev.node-m2m.com', () => {
             }    
         })
     }, 3000)
-
 })  
