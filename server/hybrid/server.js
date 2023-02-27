@@ -10,7 +10,7 @@ const edge = require('node-edge')
  */
 let rejected = 0
 let keyStore = []
-let bufferDecrypt = []
+let tmpPkStore = []
 
 function aesDecrypt(key, edata, cb){
     const algorithm = 'aes-256-gcm'
@@ -36,7 +36,7 @@ function aesDecrypt(key, edata, cb){
         return plaintext
     }
     catch (e) {
-        console.log('decrypt createDecipheriv erorr:', e.message)
+        console.log('aesDecrypt erorr:', e.message)
         if(cb){
             return cb(e.message)
         }
@@ -44,14 +44,14 @@ function aesDecrypt(key, edata, cb){
     }
 } 
 
-function startBufferDecryptProcess(){
-    bufferDecrypt.forEach((cypherData, x) => {
+function pkStoreDecryptProcess(){
+    tmpPkStore.forEach((cypherData, x) => {
         if(cypherData.iv){
             console.log('start decrypting process')
             try{
                 setImmediate(() => {  
                     serverDecryptProcess(cypherData.tcp, cypherData.epl)
-                    bufferDecrypt.splice(x, 1)
+                    tmpPkStore.splice(x, 1)
                 })
             }
             catch(e){
@@ -67,7 +67,7 @@ function genKeyPair(cb){
         console.log('start BufferDecryptProcess')
         cb('false')
         setImmediate(() => { 
-            startBufferDecryptProcess()
+            pkStoreDecryptProcess()
         })
         return 
     }
@@ -205,7 +205,7 @@ function serverDecryptProcess(tcp, epl){
                     keyStore.splice(x, 1)
                 }*/ 
                 console.log('keyStore size', keyStore.length)
-                console.log('bufferDecrypt size', bufferDecrypt.length)
+                console.log('tmpPkStore size', tmpPkStore.length)
     
             }
         }
@@ -237,12 +237,11 @@ edge.createServer(8130, (server) => {
             keyStore.forEach((keySet, x) => {
                 if(keySet.iv === epl.iv && keySet.done === false){
                     match = false
-                    
-                    bufferDecrypt.push(cypherData)
+                    tmpPkStore.push(cypherData)
                 }
             })
             if(match){
-                bufferDecrypt.push(cypherData)
+                tmpPkStore.push(cypherData)
             }
         }
         else{
