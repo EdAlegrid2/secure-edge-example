@@ -30,7 +30,7 @@ function aesEncrypt(key, plaintext, cb){
         return epl
     }
     catch(e){
-        console.log('encrypt createCipheriv error:', e.message)
+        console.log('aesEncrypt error:', e.message)
         if(cb){
             return cb(e.message)
         }
@@ -79,10 +79,7 @@ function publicEncryptData(data){
         console.log('encrypt3 error:', e.message)
     }*/
 
-    setImmediate(() => {
-        tmp = {}
-    })
-
+    tmp = {}
     return data
 }
 
@@ -101,9 +98,9 @@ setInterval(() => {
             const epl = publicEncryptData(data)
 
             setImmediate(() => {
-                ec1.send('key-pair', epl) //, (result) => {
-                  //  console.log('result:', result)
-                //})
+                ec1.send('key-pair', epl, (result) => {
+                    console.log('result:', result)
+                })
             })
         }
     })
